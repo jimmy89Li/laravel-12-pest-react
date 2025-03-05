@@ -7,9 +7,7 @@ use Illuminate\Support\Facades\Notification;
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 test('reset password link screen can be rendered', function () {
-    $response = $this->get('/forgot-password');
-
-    $response->assertStatus(200);
+    $this->get('/forgot-password')->assertStatus(200);
 });
 
 test('reset password link can be requested', function () {
@@ -30,9 +28,7 @@ test('reset password screen can be rendered', function () {
     $this->post('/forgot-password', ['email' => $user->email]);
 
     Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
-        $response = $this->get('/reset-password/'.$notification->token);
-
-        $response->assertStatus(200);
+        $this->get('/reset-password/' . $notification->token)->assertStatus(200);
 
         return true;
     });
@@ -46,14 +42,12 @@ test('password can be reset with valid token', function () {
     $this->post('/forgot-password', ['email' => $user->email]);
 
     Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
-        $response = $this->post('/reset-password', [
+        $this->post('/reset-password', [
             'token' => $notification->token,
             'email' => $user->email,
             'password' => 'password',
             'password_confirmation' => 'password',
-        ]);
-
-        $response
+        ])
             ->assertSessionHasNoErrors()
             ->assertRedirect(route('login'));
 
